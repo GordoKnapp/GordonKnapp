@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Web Game</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <!-- Font Awesome icons (free version)-->
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <!-- Google fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="css/styles.css" rel="stylesheet" />
+</head>
+
+<body>
+    <!-- Navigation-->
+    <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+        <div class="container px-4 px-lg-5">
+            <!-- <a class="navbar-brand" href="index.html">Back Home</a> -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
+                aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                Home
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.html">Resume</a></li>
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="post.html">Web Game</a></li>
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="Scratch.html">Scratch Page</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header-->
+    <header class="masthead" style="background-image: url('https://static.wikia.nocookie.net/mkfusion/images/5/54/SpaceInvader.jpg/revision/latest?cb=20190902164535')">
+        <div class="container position-relative px-4 px-lg-5">
+            <div class="row gx-4 gx-lg-5 justify-content-center">
+                <div class="col-md-10 col-lg-8 col-xl-7">
+                    <div class="post-heading">
+                        <h1>Micro Space Invaders</h1>
+                        <h2 class="subheading">Designed By Gordon Knapp in Collaboration With AI</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Post Content-->
+    <article class="mb-4">
+        <div class="container px-4 px-lg-5">
+            <!-- Game Content -->
+            <div id="gameContainer">
+                <div id="scoreBoard">
+                    <div>Score: <span id="score">0</span></div>
+                    <div>High Score: <span id="highScore">0</span></div>
+                </div>
+                <canvas id="gameCanvas" width="600" height="400"></canvas>
+                <div id="gameOver">Game Over</div>
+                <button id="startBtn">Start Game</button>
+                <button id="restartBtn" style="display:none;">Play Again</button>
+            </div>
+        </div>
+    </article>
+
+    <!-- Footer-->
+    <footer class="border-top">
+        <div class="container px-4 px-lg-5">
+            <div class="row gx-4 gx-lg-5 justify-content-center">
+                <div class="col-md-10 col-lg-8 col-xl-7">
+                    <ul class="list-inline text-center">
+                        <li class="list-inline-item">
+                            <a href="https://x.com/GordoKnapp" target="_blank">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fas fa-circle fa-stack-2x"></i>
+                                    <i class="fab fa-twitter fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a href="https://www.facebook.com/gordon.knapp.756/" target="_blank">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fas fa-circle fa-stack-2x"></i>
+                                    <i class="fab fa-facebook-f fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                        <!-- <li class="list-inline-item">
+                            <a href="#!">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fas fa-circle fa-stack-2x"></i>
+                                    <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li> -->
+                    </ul>
+                    <div class="small text-center text-muted fst-italic">Gordon Knapp &copy; I made this website</div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- Bootstrap core JS-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Core theme JS-->
+    <script src="js/scripts.js"></script>
+
+    <!-- Game Script -->
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const startBtn = document.getElementById('startBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const gameOverText = document.getElementById('gameOver');
+        const scoreDisplay = document.getElementById('score');
+        const highScoreDisplay = document.getElementById('highScore');
+
+        let player = { x: 300, y: 360, width: 40, height: 20 };
+        let bullets = [];
+        let aliens = [];
+        let asteroids = [];
+        let leftPressed = false;
+        let rightPressed = false;
+        let spacePressed = false;
+        let score = 0;
+        let highScore = 0;
+        let gameInterval;
+        let speed = 2;
+
+        function drawPlayer() {
+            ctx.fillStyle = 'lime';
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+        }
+
+        function drawBullets() {
+            ctx.fillStyle = 'yellow';
+            bullets.forEach(bullet => {
+                ctx.fillRect(bullet.x, bullet.y, 4, 10);
+                bullet.y -= 5;
+            });
+            bullets = bullets.filter(b => b.y > 0);
+        }
+
+        function drawAliens() {
+            ctx.fillStyle = 'red';
+            aliens.forEach(alien => {
+                ctx.fillRect(alien.x, alien.y, 30, 20);
+                alien.y += speed;
+            });
+        }
+
+        function drawAsteroids() {
+            ctx.fillStyle = 'gray';
+            asteroids.forEach(asteroid => {
+                ctx.beginPath();
+                ctx.arc(asteroid.x, asteroid.y, 10, 0, Math.PI * 2);
+                ctx.fill();
+                asteroid.y += speed;
+            });
+        }
+
+        function detectCollisions() {
+            bullets.forEach((b, bi) => {
+                aliens.forEach((a, ai) => {
+                    if (b.x > a.x && b.x < a.x + 30 && b.y < a.y + 20 && b.y > a.y) {
+                        aliens.splice(ai, 1);
+                        bullets.splice(bi, 1);
+                        score += 10;
+                        updateScore();
+                    }
+                });
+            });
+
+            asteroids.forEach(a => {
+                if (a.x > player.x && a.x < player.x + player.width && a.y > player.y && a.y < player.y + player.height) {
+                    endGame();
+                }
+            });
+
+            aliens.forEach(a => {
+                if (a.x > player.x && a.x < player.x + player.width && a.y > player.y && a.y < player.y + player.height) {
+                    endGame();
+                }
+            });
+        }
+
+        function updateScore() {
+            scoreDisplay.textContent = score;
+            if (score > highScore) {
+                highScore = score;
+                highScoreDisplay.textContent = highScore;
+            }
+        }
+
+        function endGame() {
+            clearInterval(gameInterval);
+            gameOverText.style.display = 'block';
+            restartBtn.style.display = 'inline-block';
+        }
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawPlayer();
+            drawBullets();
+            drawAliens();
+            drawAsteroids();
+            detectCollisions();
+
+            if (leftPressed && player.x > 0) player.x -= 5;
+            if (rightPressed && player.x < canvas.width - player.width) player.x += 5;
+            if (spacePressed) {
+                bullets.push({ x: player.x + player.width / 2, y: player.y });
+                spacePressed = false;
+            }
+
+            if (Math.random() < 0.02) aliens.push({ x: Math.random() * 570, y: 0 });
+            if (Math.random() < 0.02) asteroids.push({ x: Math.random() * 590, y: 0 });
+
+            // Gradually increase difficulty
+            speed += 0.001;
+        }
+
+        function startGame() {
+            bullets = [];
+            aliens = [];
+            asteroids = [];
+            score = 0;
+            updateScore();
+            speed = 2;
+            player.x = 300;
+            gameOverText.style.display = 'none';
+            startBtn.style.display = 'none';
+            restartBtn.style.display = 'none';
+            gameInterval = setInterval(gameLoop, 30);
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowLeft') leftPressed = true;
+            if (e.key === 'ArrowRight') rightPressed = true;
+            if (e.key === ' ') spacePressed = true;
+        });
+
+        document.addEventListener('keyup', e => {
+            if (e.key === 'ArrowLeft') leftPressed = false;
+            if (e.key === 'ArrowRight') rightPressed = false;
+        });
+
+        startBtn.onclick = startGame;
+        restartBtn.onclick = startGame;
+    </script>
+</body>
+
+</html>
